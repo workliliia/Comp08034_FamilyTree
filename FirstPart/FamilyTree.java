@@ -64,34 +64,36 @@ class FamilyTree {
     // Returns a string representation of the family tree, formatted for readability.
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        printFamilyTree(ancestor, builder, new HashSet<>());
+        printFamilyTree(ancestor, builder, new HashSet<>(), "");
         return builder.toString();
     }
 
     // Helper method to print the family tree in a flat format
-    private void printFamilyTree(FamilyTreeNode node, StringBuilder builder, Set<String> visited) {
+    private void printFamilyTree(FamilyTreeNode node, StringBuilder builder, Set<String> visited, String indentation) {
         if (node != null && !visited.contains(node.name)) {
             visited.add(node.name);
             // Print parent and partner's name if partner exists
             if (node.partner != null) {
-                builder.append(node.name).append(" partner ").append(node.partner.name).append("\n");
+                builder.append(indentation).append(node.name).append(" partner ").append(node.partner.name).append("\n");
+                // Print all children names only if partner hasn't been visited yet
+                if (!visited.contains(node.partner.name)) {
+                    FamilyTreeNode child = node.firstChild;
+                    while (child != null) {
+                        builder.append(indentation).append("    ").append(child.name).append("\n");
+                        child = child.nextSibling;
+                    }
+                }
             } else {
-                builder.append(node.name).append("\n");
-            }
-            // Print all children names
-            FamilyTreeNode child = node.firstChild;
-            while (child != null) {
-                builder.append(child.name).append("\n");
-                child = child.nextSibling;
+                builder.append(indentation).append(node.name).append("\n");
             }
             // Avoid printing partner again if already visited
             if (node.partner != null && !visited.contains(node.partner.name)) {
-                printFamilyTree(node.partner, builder, visited);
+                printFamilyTree(node.partner, builder, visited, indentation);
             }
             // Recursive call to print children as new parents if they have children
-            child = node.firstChild;
+            FamilyTreeNode child = node.firstChild;
             while (child != null) {
-                printFamilyTree(child, builder, visited);
+                printFamilyTree(child, builder, visited, indentation + "    ");
                 child = child.nextSibling;
             }
         }

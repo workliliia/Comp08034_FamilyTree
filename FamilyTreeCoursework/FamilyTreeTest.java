@@ -1,100 +1,50 @@
-package FamilyTreeCoursework;
+package FirstPart;
 
+// Main class to test the FamilyTree implementation.
 public class FamilyTreeTest {
     public static void main(String[] args) {
-        Integer option;
-        String ancestorName = Input.getString("input the ancestor's name: ");
-        FamilyTree familyTree = new FamilyTree(ancestorName);
-        
-        do {
-            // options menu
-            System.out.println("0: quit");
-            System.out.println("1: display the full family tree");
-            System.out.println("2: display the family tree from an identifier");
-            System.out.println("3: add a child");
-            System.out.println("4: add a partner");
-            option = Input.getInteger("input option: ");
-
-            switch (option) {
-                case 1:
-                    // 1: display the full family tree
-                    System.out.println(familyTree);
-                    break;
-                case 2:
-                    // 2: display the family tree from an identifier
-                    // display the family tree with identifiers
-                    System.out.println(familyTree.displayFamilyTreeIdentifiers());
-
-                    // ask for the identifier
-                    Integer rootIdentifier = Input.getInteger("input the identifier to display the tree of: ");
-                    FamilyTreeNode rootNode;
-                    try {
-                        rootNode = familyTree.getNodeFromIdentifier(rootIdentifier);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
+        try {
+            FamilyTree familyTree = new FamilyTree("James", "Mary");
+            Integer option;
+            do {
+                // Display the menu options
+                System.out.println("0: quit");
+                System.out.println("1: input child details");
+                System.out.println("2: display family");
+                // Get the user's choice
+                option = Input.getInteger("option: ");
+                switch (option) {
+                    case 0:
+                        // Quit the program
+                        System.out.println("Quitting program.");
                         break;
-                    }
-
-                    // get the family tree of that family node
-                    System.out.println(familyTree.getFamilyTreeFromNode(rootNode));
-                    break;
-                case 3:
-                    // 3: add a child
-                    System.out.println(familyTree.displayFamilyTreeIdentifiers());
-
-                    // select family member
-                    Integer parentIdentifier = Input.getInteger("input the identifier of the parent: ");
-                    FamilyTreeNode parentNode;
-                    try {
-                        parentNode = familyTree.getNodeFromIdentifier(parentIdentifier);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                    case 1:
+                        // Add a child to a family member
+                        try {
+                            String parentName = Input.getString("Parent name: ");
+                            String childName = Input.getString("Child name: ");
+                            if (containsNumbersChild(childName)){
+                                throw new RuntimeException("Input contains numbers.");
+                            }
+                            familyTree.addChild(parentName, childName);
+                        } catch (Exception e) {
+                            System.out.println("Error adding child: " + e.getMessage());
+                        }
                         break;
-                    }
-
-                    // check for partner, do not ask if member has no partner
-                    if (parentNode.partner == null) {
-                        System.out.println("the parent has no partner, cannot add a child");
+                    case 2:
+                        // Display the family tree
+                        System.out.println(familyTree);
                         break;
-                    }
-
-                    // add child
-                    String childName = Input.getString("input the new child name: ");
-                    try {
-                        familyTree.addChild(parentNode, childName);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-                case 4:
-                    // 4: add a partner
-                    System.out.println(familyTree.displayFamilyTreeIdentifiers());
-
-                    // select family member
-                    Integer identifier = Input.getInteger("input the identifier to add a partner to: ");
-                    FamilyTreeNode node;
-                    try {
-                        node = familyTree.getNodeFromIdentifier(identifier);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        break;
-                    }
-
-                    // check for partner and don't ask if there is one
-                    if (node.partner != null) {
-                        System.out.println("the node already has a partner");
-                        break;
-                    }
-
-                    // add partner
-                    String newPartnerName = Input.getString("input the new partner's name: ");
-                    try {
-                        familyTree.addPartner(node, newPartnerName);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                    }
-                    break;
-            }
-        } while (option != 0);    
+                    default:
+                        // Invalid option
+                        System.out.println("Invalid option");
+                }
+            } while (option != 0);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+    private static boolean containsNumbersChild(String childName) {
+        return childName.matches(".*\\d.*");
     }
 }
